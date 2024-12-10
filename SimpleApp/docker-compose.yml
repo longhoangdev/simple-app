@@ -1,0 +1,25 @@
+﻿services:
+  simpleapp:
+    image: simpleapp
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 8081:8080  
+    depends_on:
+      postgres:
+        condition: service_healthy
+  postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_DB=simple-db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "simpleapp-os" ]
+      interval: 5s
+      timeout: 60s
+      retries: 5    
